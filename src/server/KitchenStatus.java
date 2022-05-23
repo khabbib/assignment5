@@ -1,4 +1,4 @@
-package wegotthis;
+package server;
 
 public enum KitchenStatus {
     Received("order received"),

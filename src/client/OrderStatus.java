@@ -1,4 +1,4 @@
-package wegotthis;
+package client;
 
 public enum OrderStatus {
     NotSent("not sent to the server"),

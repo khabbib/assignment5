@@ -1,4 +1,4 @@
-package wegotthis;
+package view;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,17 +42,17 @@ public class GenericRestaurantForm {
     /**
      * Starts the application
      */
-    public void Start() {
+    public void Start(boolean isServer) {
         frame = new JFrame();
         frame.setBounds(0, 0, 900, 482);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
-        frame.setTitle("Generic Restaurant");
-//        if(isServer) {
-//            frame.setTitle("Generic Restaurant [SERVER]");
-//        } else {
-//            frame.setTitle("Generic Restaurant [CLIENT]");
-//        }
+        //frame.setTitle("Generic Restaurant");
+        if(isServer) {
+            frame.setTitle("Generic Restaurant [SERVER]");
+        } else {
+            frame.setTitle("Generic Restaurant [CLIENT]");
+        }
         InitializeGUI();					// Fill in components
         frame.setVisible(true);
         frame.setResizable(false);			// Prevent user from change size
@@ -90,7 +90,7 @@ public class GenericRestaurantForm {
         menuItem1Button = new JButton();
         menuItem1Button.setBounds(180, 50, 100, 30);
         menuItem1Button.setText("add");
-        //menuItem1Button.addActionListener(e -> whichMethod());
+        menuItem1Button.addActionListener(e -> addItem1());
         menuItem1.add(menuItem1Button);
 
         //**********************
@@ -119,7 +119,7 @@ public class GenericRestaurantForm {
         menuItem2Button = new JButton();
         menuItem2Button.setBounds(180, 50, 100, 30);
         menuItem2Button.setText("add");
-        //menuItem2Button.addActionListener(e -> whichMethod());
+        menuItem2Button.addActionListener(e -> addItem2());
         menuItem2.add(menuItem2Button);
 
         //**********************
@@ -148,13 +148,13 @@ public class GenericRestaurantForm {
         menuItem3Button = new JButton();
         menuItem3Button.setBounds(180, 50, 100, 30);
         menuItem3Button.setText("add");
-        //menuItem3Button.addActionListener(e -> whichMethod());
+        menuItem3Button.addActionListener(e -> addItem3());
         menuItem3.add(menuItem3Button);
 
         //*********************
-        //*** canvas.Order cart  *****
+        //*** Order cart  *****
         //*********************
-        labelOrder = new JLabel("canvas.Order");
+        labelOrder = new JLabel("Order");
         labelOrder.setBounds(340, 10, 128, 13);
         frame.add(labelOrder);
 
@@ -162,14 +162,14 @@ public class GenericRestaurantForm {
         orderCartArea = new JList<String>(orderCartModel);
         orderCartArea.setBounds(340, 35, 250, 250);
         orderCartArea.setBorder(BorderFactory.createLineBorder(Color.black));
-        orderCartModel.addElement("Sandwich");
-        orderCartModel.addElement("Coffee");
+        //orderCartModel.addElement("Sandwich");
+        //orderCartModel.addElement("Coffee");
         frame.add(orderCartArea);
 
         orderRemoveButton = new JButton();
         orderRemoveButton.setBounds(340, 300, 100, 30);
         orderRemoveButton.setText("remove");
-        //orderRemoveButton.addActionListener(e -> whichMethod());
+        orderRemoveButton.addActionListener(e -> removeOrderItem());
         frame.add(orderRemoveButton);
 
         orderSubmitButton = new JButton();
@@ -189,9 +189,41 @@ public class GenericRestaurantForm {
         orderStatusArea = new JList<String>(orderStatusModel);
         orderStatusArea.setBounds(620, 35, 250, 335);
         orderStatusArea.setBorder(BorderFactory.createLineBorder(Color.black));
-        orderStatusModel.addElement("19:02:03 canvas.Order submitted");
-        orderStatusModel.addElement("19:02:05 canvas.Order accepted");
+        orderStatusModel.addElement("19:02:03 Order submitted");
+        orderStatusModel.addElement("19:02:05 Order accepted");
         frame.add(orderStatusArea);
+    }
+
+    public void addItem1() {
+        orderCartModel.addElement(menuItem1Name.getText()); // Sandwich
+    }
+
+    public void addItem2() {
+        orderCartModel.addElement(menuItem2Name.getText()); // Borscht
+    }
+
+    public void addItem3() {
+        orderCartModel.addElement(menuItem3Name.getText()); // Coffee
+    }
+
+    public void removeOrderItem() {
+        int index = orderCartArea.getSelectedIndex();
+
+        if(validateIndex(index)) {
+            if(orderCartArea.isSelectedIndex(index)) {
+                System.out.println(index);
+                orderCartModel.remove(index);
+            }
+        }
+    }
+
+    private boolean validateIndex(int index) {
+        boolean ok = true;
+        if (index < 0) {
+            JOptionPane.showMessageDialog(null, "Select an item in the list!");
+            ok = false;
+        }
+        return ok;
     }
 
     // GETTERS AND SETTERS FOR BUTTONS
@@ -211,4 +243,28 @@ public class GenericRestaurantForm {
     public JButton getOrderSubmitButton() {
         return orderSubmitButton;
     }
+
+    // GETTERS AND SETTERS
+
+    public DefaultListModel<String> getOrderCartModel() {
+        return orderCartModel;
+    }
+
+    public void setOrderCartModel(DefaultListModel<String> orderCartModel) {
+        this.orderCartModel = orderCartModel;
+    }
+
+    public JList<String> getOrderCartArea() {
+        return orderCartArea;
+    }
+
+    public void setOrderCartArea(JList<String> orderCartArea) {
+        this.orderCartArea = orderCartArea;
+    }
+
+
+
+
+
+
 }

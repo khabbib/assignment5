@@ -1,4 +1,7 @@
-package wegotthis;
+package server;
+
+import client.Order;
+import client.OrderStatus;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;

@@ -1,6 +1,8 @@
-package todo;
+package server;
 
-import wegotthis.*;
+import client.Order;
+import client.OrderStatus;
+import view.GenericRestaurantForm;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,14 +16,33 @@ public class KitchenServer extends AbstractKitchenServer {
     private ServerSocket serverSocket;
     private ClientHandler clientHandler;
 
+    public static void main(String[] args) {
+        try {
+            GenericRestaurantForm restaurant = new GenericRestaurantForm();
+            restaurant.Start(true);
+
+            // Start Server
+            ServerSocket serverSocket = new ServerSocket(4334);
+            KitchenServer kitchenServer = new KitchenServer(serverSocket);
+            kitchenServer.startServer();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public KitchenServer(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
 
     public void startServer() {
 
+
         try {
             while (!serverSocket.isClosed()) {
+                System.out.println("Hello");
                 Socket socket = serverSocket.accept();
                 clientHandler = new ClientHandler(socket, this);
                 new Thread(clientHandler).start();
@@ -33,7 +54,6 @@ public class KitchenServer extends AbstractKitchenServer {
 
     @Override
     public CompletableFuture<KitchenStatus> receiveOrder(Order order) throws InterruptedException {
-        // TO DO!
         return null;
     }
 

@@ -1,4 +1,6 @@
-package wegotthis;
+package client;
+
+import server.AbstractKitchenServer;
 
 import java.util.Timer;
 
