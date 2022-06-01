@@ -35,4 +35,7 @@ public abstract class AbstractOrderClient {
      * Start an asynchronous request to {@link AbstractKitchenServer#serveOrder(String)}
      */
     abstract protected void pickUpOrder();
+
+    // skapades nyss
+    public abstract void submitOrder(String s);
 }

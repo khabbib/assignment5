@@ -15,24 +15,18 @@ public class OrderClient extends AbstractOrderClient {
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
 
-    public static void main(String[] args) {
-        try {
-
-            restaurant = new GenericRestaurantForm();
-            restaurant.Start(false);
-
-            // Start Client
-            Socket socket = new Socket("localhost", 4334);
-            OrderClient orderClient = new OrderClient(socket);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 4334);
+        OrderClient orderClient = new OrderClient(socket);
     }
 
     public OrderClient(Socket socket) {
+
         this.socket = socket;
+
+        restaurant = new GenericRestaurantForm();
+        restaurant.Start(this);
+
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -43,9 +37,20 @@ public class OrderClient extends AbstractOrderClient {
         }
     }
 
-
     @Override
     public void submitOrder() {
+        try {
+            OrderItem orderItem = new OrderItem("Apple", "Just an apple!", 20);
+            Order order = new Order();
+            order.addOrderItem(orderItem);
+            //System.out.println(order.getOrderID());
+
+            objectOutputStream.writeObject(order);
+            objectOutputStream.flush();
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         // TO DO!
     }
 
@@ -59,6 +64,11 @@ public class OrderClient extends AbstractOrderClient {
         // TO DO!
     }
 
+    @Override
+    public void submitOrder(String s) {
+
+    }
+
     private static class Read extends Thread {
 
         @Override
@@ -66,7 +76,8 @@ public class OrderClient extends AbstractOrderClient {
             while(!Thread.interrupted()) {
                 // TO DO!
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -1,12 +1,16 @@
 package view;
 
 import client.AbstractOrderClient;
+import client.OrderClient;
 import client.OrderItem;
+import server.KitchenStatus;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GenericRestaurantForm {
+
+    OrderClient orderClient;
 
     private JFrame frame;			// The canvas.Main window
 
@@ -45,17 +49,13 @@ public class GenericRestaurantForm {
     /**
      * Starts the application
      */
-    public void Start(boolean isServer) {
+    public void Start(OrderClient orderClient) {
+        this.orderClient = orderClient;
         frame = new JFrame();
         frame.setBounds(0, 0, 900, 482);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
-        //frame.setTitle("Generic Restaurant");
-        if(isServer) {
-            frame.setTitle("Generic Restaurant [SERVER]");
-        } else {
-            frame.setTitle("Generic Restaurant [CLIENT]");
-        }
+        frame.setTitle("Generic Restaurant [CLIENT]");
         InitializeGUI();					// Fill in components
         frame.setVisible(true);
         frame.setResizable(false);			// Prevent user from change size
@@ -192,8 +192,8 @@ public class GenericRestaurantForm {
         orderStatusArea = new JList<String>(orderStatusModel);
         orderStatusArea.setBounds(620, 35, 250, 335);
         orderStatusArea.setBorder(BorderFactory.createLineBorder(Color.black));
-        orderStatusModel.addElement("19:02:03 Order submitted");
-        orderStatusModel.addElement("19:02:05 Order accepted");
+        //orderStatusModel.addElement("19:02:03 Order submitted");
+        //orderStatusModel.addElement("19:02:05 Order accepted");
         frame.add(orderStatusArea);
     }
 
@@ -230,17 +230,22 @@ public class GenericRestaurantForm {
     }
 
     public void order() {
+
+        for(int i = 0; i <orderCartModel.size(); i++) {
+            orderClient.submitOrder();
+        }
+
         //OrderItem orderItem = new OrderItem("Apple", "Just an apple!", 20);
         //AbstractOrderClient.addItemToOrder(orderItem);
-
         System.out.println("Before: " + orderCartModel.size());
         System.out.println("Order is done!");
         orderCartModel.clear();
         System.out.println("After: " + orderCartModel.size());
+
+        orderStatusModel.addElement(KitchenStatus.Received.toString());
     }
 
     // GETTERS AND SETTERS FOR BUTTONS
-
     public JButton getMenuItem1Button() {
         return menuItem1Button;
     }
@@ -258,26 +263,17 @@ public class GenericRestaurantForm {
     }
 
     // GETTERS AND SETTERS
-
     public DefaultListModel<String> getOrderCartModel() {
         return orderCartModel;
     }
-
     public void setOrderCartModel(DefaultListModel<String> orderCartModel) {
         this.orderCartModel = orderCartModel;
     }
-
     public JList<String> getOrderCartArea() {
         return orderCartArea;
     }
-
     public void setOrderCartArea(JList<String> orderCartArea) {
         this.orderCartArea = orderCartArea;
     }
-
-
-
-
-
 
 }

@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class KitchenServer extends AbstractKitchenServer {
@@ -16,10 +17,13 @@ public class KitchenServer extends AbstractKitchenServer {
     private ServerSocket serverSocket;
     private ClientHandler clientHandler;
 
+    Order order;
+    public ArrayList<Order> orderArrayList = new ArrayList<>();
+
+    CompletableFuture<OrderStatus> completableFuture = new CompletableFuture<>();
+
     public static void main(String[] args) {
         try {
-            GenericRestaurantForm restaurant = new GenericRestaurantForm();
-            restaurant.Start(true);
 
             // Start Server
             ServerSocket serverSocket = new ServerSocket(4334);
@@ -30,8 +34,6 @@ public class KitchenServer extends AbstractKitchenServer {
             e.printStackTrace();
         }
     }
-
-
 
     public KitchenServer(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -54,13 +56,19 @@ public class KitchenServer extends AbstractKitchenServer {
 
     @Override
     public CompletableFuture<KitchenStatus> receiveOrder(Order order) throws InterruptedException {
-        return null;
+        return null; //KitchenStatus.Received
     }
 
     @Override
     public CompletableFuture<OrderStatus> checkStatus(String orderID) throws InterruptedException {
-        // TO DO!
-        return null;
+
+        for(Order order : orderArrayList) {
+            if(order.getOrderID().contains(orderID)) {
+                order.setStatus(OrderStatus.Received);
+            }
+        }
+
+        return completableFuture;
     }
 
     @Override
@@ -74,7 +82,7 @@ public class KitchenServer extends AbstractKitchenServer {
         // TO DO!
     }
 
-    public static class ClientHandler implements Runnable {
+    public class ClientHandler implements Runnable {
 
         private ObjectOutputStream objectOutputStream;
         private ObjectInputStream objectInputStream;
@@ -83,10 +91,8 @@ public class KitchenServer extends AbstractKitchenServer {
         public ClientHandler(Socket socket, KitchenServer kitchenServer) {
             try {
                 this.kitchenServer = kitchenServer;
-
-                objectInputStream = new ObjectInputStream(socket.getInputStream());
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -96,7 +102,17 @@ public class KitchenServer extends AbstractKitchenServer {
         public void run() {
             while (!Thread.interrupted()) {
                 // TO DO!
+                try {
+                    Order order = (Order) objectInputStream.readObject();
+                    orderArrayList.add(order);
+                    kitchenServer.receiveOrder(order);
+                    kitchenServer.checkStatus(order.getOrderID());
 
+                    System.out.println(order.getOrderID());
+
+                } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("KitchenServer runs!");
             }
         }

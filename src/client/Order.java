@@ -1,10 +1,11 @@
 package client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Order {
+public class Order implements Serializable {
     private String orderID;
     private List<OrderItem> orderList;
     private boolean sent;
