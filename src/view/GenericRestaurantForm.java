@@ -1,5 +1,8 @@
 package view;
 
+import client.AbstractOrderClient;
+import client.OrderItem;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -175,7 +178,7 @@ public class GenericRestaurantForm {
         orderSubmitButton = new JButton();
         orderSubmitButton.setBounds(490, 300, 100, 30);
         orderSubmitButton.setText("order!");
-        //orderSubmitButton.addActionListener(e -> whichMethod());
+        orderSubmitButton.addActionListener(e -> order());
         frame.add(orderSubmitButton);
 
         //*********************
@@ -224,6 +227,16 @@ public class GenericRestaurantForm {
             ok = false;
         }
         return ok;
+    }
+
+    public void order() {
+        //OrderItem orderItem = new OrderItem("Apple", "Just an apple!", 20);
+        //AbstractOrderClient.addItemToOrder(orderItem);
+
+        System.out.println("Before: " + orderCartModel.size());
+        System.out.println("Order is done!");
+        orderCartModel.clear();
+        System.out.println("After: " + orderCartModel.size());
     }
 
     // GETTERS AND SETTERS FOR BUTTONS
