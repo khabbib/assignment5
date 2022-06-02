@@ -30,7 +30,7 @@ public class OrderClient extends AbstractOrderClient {
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            new Read().start();
+            new Read(socket).start();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,17 +71,37 @@ public class OrderClient extends AbstractOrderClient {
 
     private static class Read extends Thread {
 
+        private ObjectInputStream objectInputStream;
+        private ObjectOutputStream objectOutputStream;
+        private Socket socket;
+
+        public Read(Socket socket) {
+            this.socket = socket;
+        }
+
         @Override
         public void run() {
+
+            try {
+                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             while(!Thread.interrupted()) {
                 // TO DO!
                 try {
-                    Thread.sleep(1000);
 
-                } catch (InterruptedException e) {
+                    Object obj = objectInputStream.readObject();
+                    System.out.println(obj);
+
+                    Thread.sleep(1000);
+                    System.out.println("OderClient runs!");
+
+                } catch (InterruptedException | ClassNotFoundException | IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println("OrderClient runs!");
             }
         }
     }

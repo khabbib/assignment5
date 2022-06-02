@@ -2,7 +2,6 @@ package server;
 
 import client.Order;
 import client.OrderStatus;
-import view.GenericRestaurantForm;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 
 public class KitchenServer extends AbstractKitchenServer {
 
@@ -40,11 +39,9 @@ public class KitchenServer extends AbstractKitchenServer {
     }
 
     public void startServer() {
-
-
         try {
             while (!serverSocket.isClosed()) {
-                System.out.println("Hello");
+                System.out.println("Kitchen Sever!");
                 Socket socket = serverSocket.accept();
                 clientHandler = new ClientHandler(socket, this);
                 new Thread(clientHandler).start();
@@ -61,14 +58,15 @@ public class KitchenServer extends AbstractKitchenServer {
 
     @Override
     public CompletableFuture<OrderStatus> checkStatus(String orderID) throws InterruptedException {
-
         for(Order order : orderArrayList) {
             if(order.getOrderID().contains(orderID)) {
+                System.out.println("checks status...");
                 order.setStatus(OrderStatus.Received);
+                CompletableFuture fm = CompletableFuture.supplyAsync(() -> OrderStatus.Received);
+                return fm;
             }
         }
-
-        return completableFuture;
+        return null;
     }
 
     @Override
@@ -103,11 +101,17 @@ public class KitchenServer extends AbstractKitchenServer {
             while (!Thread.interrupted()) {
                 // TO DO!
                 try {
+                    //ExecutorService executorService = Executors.newFixedThreadPool(7);
+                    //executorService.submit(kitchenServer.cook(order));
+
                     Order order = (Order) objectInputStream.readObject();
                     orderArrayList.add(order);
                     kitchenServer.receiveOrder(order);
                     kitchenServer.checkStatus(order.getOrderID());
 
+                    Thread.sleep(1000);
+
+                    objectOutputStream.writeObject(kitchenServer.checkStatus(order.getOrderID()));
                     System.out.println(order.getOrderID());
 
                 } catch (IOException | ClassNotFoundException | InterruptedException e) {
